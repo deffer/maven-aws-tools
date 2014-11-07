@@ -22,7 +22,7 @@
 	</properties>
 
 	<prerequisites>
-		<maven>[3.2.2,)</maven>
+		<maven>[3.2.1,)</maven>
 	</prerequisites>
 
 	<build>

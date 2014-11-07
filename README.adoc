@@ -1,0 +1,19 @@
+= Usage
+
+ <build>
+ 	<pluginManagement>
+ 		<plugins>
+ 			<plugin>
+ 				<groupId>org.deffer.maven</groupId>
+ 				<artifactId>aws-tools-maven-plugin</artifactId>
+ 				<version>1.1</version>
+ 				<extensions>true</extensions>
+ 				<configuration>
+ 					<source>background.jpg</source>
+ 					<destination>background.jpg</destination>
+ 					<bucketName>castle-public</bucketName>
+ 				</configuration>
+ 			</plugin>
+ 		</plugins>
+ 	</pluginManagement>
+ </build>
