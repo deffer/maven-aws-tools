@@ -1,10 +1,15 @@
 package org.deffer.maven.aws.tools;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.*;
+import com.amazonaws.auth.policy.conditions.StringCondition;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.services.s3.transfer.Transfer;
 import com.amazonaws.services.s3.transfer.Upload;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -29,63 +34,107 @@ public class UploadMojo extends AbstractMojo {
 		}
 	}
 
-	// env, java, file (default), instance
 	@Parameter(property = "run.credentialProvider", defaultValue = "file")
-	private String credProviderParam;
+	private String credProviderParam; 	// env, java, file (default), instance, provided
 
-	@Parameter(property = "run.accessKey")
+	@Parameter(property = "run.accessKey", required = false)
 	private String accessKey;
 
-	@Parameter(property = "run.secretKey")
+	@Parameter(property = "run.secretKey", required = false)
 	private String secretKey;
 
 	@Parameter(property = "run.dryRun", defaultValue = "false")
 	private boolean dryRun;
 
-	// The file to upload
-	@Parameter(property = "run.source", required = true)
-	private String source;
+    @Parameter(property = "run.bucketName", required = true)
+    private String bucketName;
 
-	// Name of the object in S3. If empty, same as source file name
-	@Parameter(property = "run.destination", required = false)
-	private String destination;
+	@Parameter(property = "run.source", required = false)
+	private String source; // The file to upload
 
-	@Parameter(property = "run.bucketName", required = true)
-	private String bucketName;
+    @Parameter(property = "run.source", required = false)
+    private String[] sources; // Or files
 
+	@Parameter(property = "run.destination", required = false, defaultValue = "")
+	private String destination; // Name of the object in S3 (if only one source) or folder prefix in S3
+
+    @Parameter(property = "run.suffix", required = false, defaultValue = "")
+    private String suffix; // added to the file names in S3, can be used for versioning of files
+
+    @Parameter(property = "run.recursive", defaultValue = "false")
+    private boolean recursive; // how to upload folders, if there are any
 
 
 	@Override
 	public void execute() throws MojoExecutionException {
+        if (suffix == null) suffix = "";
+        if (destination == null) destination = "";
 
-		File sourceFile = new File(source);
-		if (!sourceFile.exists())
-			throw new MojoExecutionException("File doesn't exist: " + source);
-		if (!sourceFile.isFile())
-			throw new MojoExecutionException("Folder upload is not supported " + sourceFile);
+        List<String> fileNames = new ArrayList<String>();
+        if (source!=null)
+            fileNames.add(source);
+        if (sources!=null)
+            fileNames.addAll(Arrays.asList(sources));
 
-		AWSCredentialsProvider credProvider = getProvider(CRED_TYPES.fromString(credProviderParam));
-		TransferManager tm = new TransferManager(credProvider);
+        if (fileNames.size() == 0){
+            throw new MojoExecutionException("At least one file/folder should be specified");
+        }
 
-		Upload upload = tm.upload(bucketName, destination, sourceFile);   // <----------- UPLOAD --
+        for (String sourceFileName : fileNames){
+            File sourceFile = new File(sourceFileName);
+            if (!sourceFile.exists())
+                throw new MojoExecutionException("File doesn't exist: " + source);
+        }
 
-		try {
-			getLog().debug("Transferring " + upload.getProgress().getTotalBytesToTransfer() + " bytes...");
+        AWSCredentialsProvider credProvider = getProvider(CRED_TYPES.fromString(credProviderParam));
+        TransferManager tm = new TransferManager(credProvider);
 
-			// block and wait for the upload to finish
-			upload.waitForCompletion();  // <----------- and wait --
+        for (String sourceFileName : fileNames) {
+            File sourceFile = new File(sourceFileName);
 
-			getLog().debug("Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes.");
-		} catch (AmazonClientException ae) {
-			getLog().error("Unable to upload file, upload was aborted. "+ae.getMessage(), ae);
-			ae.printStackTrace();
-			tm.shutdownNow();
-			throw new MojoExecutionException("Unable to upload file to S3: "+ae.getMessage(), ae);
-		}  catch (InterruptedException e) {
-			getLog().error("Unable to upload file to S3: unexpected interruption");
-			tm.shutdownNow();
-			throw new MojoExecutionException("Unable to upload file to S3: unexpected interruption");
-		}
+            boolean isFile = sourceFile.isFile();
+
+            String key = sourceFileName;
+            if (!destination.isEmpty() && source!= null && fileNames.size()==1 && isFile)
+                key = destination;
+            else {
+                if (!destination.isEmpty() && !destination.endsWith("/"))
+                    destination+= "/";
+
+                if (isFile){
+                    key = destination + key + suffix;
+                }else if (!destination.isEmpty()){
+                    key = destination;
+                }
+            }
+
+            if (!dryRun) {
+                Transfer upload;
+                if (isFile)
+                    upload = tm.upload(bucketName, key, sourceFile);   // <----------- UPLOAD --
+                else
+                    upload = tm.uploadDirectory(bucketName,destination, sourceFile, true);
+
+                try {
+                    getLog().debug("Transferring " + upload.getProgress().getTotalBytesToTransfer() + " bytes...");
+
+                    upload.waitForCompletion();  // <----------- and wait --
+
+                    getLog().info("Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes.");
+                } catch (AmazonClientException ae) {
+                    getLog().error("Unable to upload file, upload was aborted. " + ae.getMessage(), ae);
+                    ae.printStackTrace();
+                    tm.shutdownNow();
+                    throw new MojoExecutionException("Unable to upload file to S3: " + ae.getMessage(), ae);
+                } catch (InterruptedException e) {
+                    getLog().error("Unable to upload file to S3: unexpected interruption");
+                    tm.shutdownNow();
+                    throw new MojoExecutionException("Unable to upload file to S3: unexpected interruption");
+                }
+            }else{
+                getLog().info("(dry run) "+(isFile?"File ":"Folder ")+sourceFile+" would have been uploaded to "+bucketName+" as "+key);
+            }
+        }
 	}
 
 	private AWSCredentialsProvider getProvider(CRED_TYPES credProviderType) throws MojoExecutionException {
