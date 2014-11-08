@@ -7,7 +7,7 @@
 	<version>1.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
-	<name>AWS tools maven plugin</name>
+	<name>AWS tools maven plugin (S3 upload)</name>
 
 	<scm>
 		<url>https://github.com/deffer/aws-tools-maven-plugin</url>
@@ -53,7 +53,8 @@
 
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
-				<executions>
+                <version>2.2.1</version>
+                <executions>
 					<execution>
 						<id>attach-sources</id>
 						<phase>package</phase>
@@ -63,6 +64,19 @@
 					</execution>
 				</executions>
 			</plugin>
+
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
 		</plugins>
 	</build>
@@ -81,5 +95,12 @@
 			<version>1.9.3</version>
 		</dependency>
 	</dependencies>
+
+    <licenses>
+        <license>
+            <name>BSD</name>
+            <url>http://opensource.org/licenses/BSD-3-Clause</url>
+        </license>
+    </licenses>
 
 </project>

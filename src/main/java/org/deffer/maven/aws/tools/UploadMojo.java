@@ -19,9 +19,33 @@ import org.apache.maven.plugins.annotations.Parameter;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 
+/**
+ * Uploads files/folders to S3 bucket.
+ *
+ * Supports:
+ * Uploading 1 file (destination name can be changed)
+ * Uploading list of files (destination name is interpreted as "subfolder" in S3)
+ * Uploading folder(s) (destination name is interpreted as "subfolder" in S3)
+ *
+ * Limitations:
+ * Only one bucket can be configured per execution.
+ * No metadata support.
+ * No ACL support.
+ * When uploading  more than 1 file/folder, destination names of files will be the same as original names.
+ *
+ * author: Irina Benediktovich - http://plus.google.com/+IrinaBenediktovich
+ */
 @Mojo(name = "upload")
 public class UploadMojo extends AbstractMojo {
 
+    /**
+     * Lists mechanisms of providing AWS credentials to java sdk.
+     * ENV - through environment variables
+     * JAVA - through java variables
+     * FILE - through credentials file (USER_HOME/.aws/credentials)
+     * INSTANCE - when running on EC2
+     * PROVIDED - configured in pom
+     */
 	public static enum CRED_TYPES{
 		ENV,JAVA,FILE,INSTANCE,PROVIDED;
 
@@ -34,37 +58,75 @@ public class UploadMojo extends AbstractMojo {
 		}
 	}
 
+    /**
+     * env, java, file (default), instance, provided
+     * @see org.deffer.maven.aws.tools.UploadMojo.CRED_TYPES
+     */
 	@Parameter(property = "run.credentialProvider", defaultValue = "file")
-	private String credProviderParam; 	// env, java, file (default), instance, provided
+	private String credProviderParam;
 
+    /**
+     * Only used if credProviderParam == PROVIDED
+     */
 	@Parameter(property = "run.accessKey", required = false)
 	private String accessKey;
 
+    /**
+     * Only used if credProviderParam == PROVIDED
+     */
 	@Parameter(property = "run.secretKey", required = false)
 	private String secretKey;
 
+    /**
+     * Report upload plan, but dont do actual upload
+     */
 	@Parameter(property = "run.dryRun", defaultValue = "false")
 	private boolean dryRun;
 
+    /**
+     * Destination S3 bucket name
+     */
     @Parameter(property = "run.bucketName", required = true)
     private String bucketName;
 
+    /**
+     * File/folder name. Only use when there is only file/folder to upload.
+     */
 	@Parameter(property = "run.source", required = false)
 	private String source; // The file to upload
 
+    /**
+     * List of files/folders to upload.
+     */
     @Parameter(property = "run.source", required = false)
     private String[] sources; // Or files
 
+    /**
+     * If there is only one file and its passed as source, destination means new file name (on S3).
+     * Otherwise its a name of the "subfolder" in the bucket where all files/folders will go to.
+     */
 	@Parameter(property = "run.destination", required = false, defaultValue = "")
 	private String destination; // Name of the object in S3 (if only one source) or folder prefix in S3
 
+    /**
+     * Added to destination file names (for instance if suffix="-1.1" and source is "castle", final name is "castle-1.1"
+     * Only works for source files (not folder and not files in those folders)
+     */
     @Parameter(property = "run.suffix", required = false, defaultValue = "")
     private String suffix; // added to the file names in S3, can be used for versioning of files
 
+    /**
+     * When uploading folders, whether subfolders should be uploaded too.
+     */
     @Parameter(property = "run.recursive", defaultValue = "false")
     private boolean recursive; // how to upload folders, if there are any
 
 
+    /**
+     * main method. does everything.
+     *
+     * @throws MojoExecutionException
+     */
 	@Override
 	public void execute() throws MojoExecutionException {
         if (suffix == null) suffix = "";
@@ -119,8 +181,10 @@ public class UploadMojo extends AbstractMojo {
                     getLog().debug("Transferring " + upload.getProgress().getTotalBytesToTransfer() + " bytes...");
 
                     upload.waitForCompletion();  // <----------- and wait --
-
-                    getLog().info("Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes.");
+                    if (isFile)
+                        getLog().info("Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes. "+sourceFile+" to "+ bucketName + " as "+key);
+                    else
+                        getLog().info("Upload complete: folder " + sourceFile+" to "+ bucketName + " as "+key);
                 } catch (AmazonClientException ae) {
                     getLog().error("Unable to upload file, upload was aborted. " + ae.getMessage(), ae);
                     ae.printStackTrace();
