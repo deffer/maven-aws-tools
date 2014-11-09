@@ -14,7 +14,7 @@ For example, the minimal configuration below will upload file `background.jpg` i
  	<pluginManagement>
  		<plugins>
  			<plugin>
- 				<groupId>org.deffer.maven</groupId>
+ 				<groupId>net.deffer.maven</groupId>
  				<artifactId>aws-tools-maven-plugin</artifactId>
  				<version>1.1</version>
  				<extensions>true</extensions>
@@ -86,6 +86,10 @@ Only one bucket and one destination folder can be configured per execution.
 No metadata support. No ACL support.
 
 Suffix only supported for files (single or list) but not in folders
+
+=== Known bugs
+
+Suffix is added to the end of full file name (so to the extension)
 
 == Configuration
 
