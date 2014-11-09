@@ -157,4 +157,10 @@ through the Amazon EC2 metadata service (only when running on EC2 instances)
 provided::
 configured in pom (not recommended)
 
+ <configuration>
+ 	<credentialProvider>provided</credentialProvider>
+ 	<accessKey>...</accessKey> 	
+ 	<secretKey>...</secretKey>
+ </configuration>
+ 
 == Examples
