@@ -99,15 +99,15 @@ Suffix only supported for files (single or list) but not in folders
 
 |credentialProvider
 |no +
-(_default file_)
-|`env, java, file (default), instance or provided`. See below for description.
+_(default file)_
+|`env \| java \| file \| instance \| provided`. See below for description.
 
 |source
-|yes* (either source or sources)
+|yes* _(either source or sources)_
 |name of the single file to upload
 
 |sources
-|yes* (either source or sources)
+|yes* _(either source or sources)_
 |list of files/folders to upload
 
 |destination
@@ -116,7 +116,7 @@ Suffix only supported for files (single or list) but not in folders
 
 |recursive
 |no +
-(_default false_)
+_(default false)_
 |when uploading folder, indicates whether inner folders should be uploaded too
 
 |suffix
@@ -125,7 +125,7 @@ Suffix only supported for files (single or list) but not in folders
 
 |dryRun
 |no +
-(_default false_)
+_(default false)_
 |Skips the actual upload. Use it to test your configuration before running it.
 
 |accessKey,
@@ -135,5 +135,18 @@ secretKey
 |===
 
 == Credentials options
+
+The `credentialProvider` configuration has next options (which corresponds to those described http://docs.aws.amazon.com/AWSSdkDocsJava/latest//DeveloperGuide/credentials.html[here])
+
+env:: 
+through environment `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+java::
+through java system properties `aws.accessKeyId` and `aws.secretKey`
+file::  
+in the credentials file at `<USER_HOME>/.aws/credentials`
+instance::  
+through the Amazon EC2 metadata service (only when running on EC2 instances)
+provided::
+configured in pom (not recommended)
 
 == Examples
