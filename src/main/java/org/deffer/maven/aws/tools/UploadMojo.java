@@ -184,7 +184,7 @@ public class UploadMojo extends AbstractMojo {
                     if (isFile)
                         getLog().info("Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes. "+sourceFile+" to "+ bucketName + " as "+key);
                     else
-                        getLog().info("Upload complete: folder " + sourceFile+" to "+ bucketName + " as "+key);
+                        getLog().info("Upload complete: folder " + sourceFile+" to "+ bucketName + (key.equals(sourceFileName)?"":" as "+key));
                 } catch (AmazonClientException ae) {
                     getLog().error("Unable to upload file, upload was aborted. " + ae.getMessage(), ae);
                     ae.printStackTrace();
