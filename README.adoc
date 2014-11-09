@@ -1,5 +1,14 @@
-= Usage
+= AWS tools maven plugin
 
+At the moment only supports upload of resources to S3 bucket.
+
+== Usage
+
+* Set up your preferred way of supplying AWS credentials
+* Configure plugin in then pom
+* Run `mvn aws-tools:upload`
+
+For example, the minimal configuration below will upload file `background.jpg` into `castle-public` bucket. Credentials will bee looked in the `USER_HOME/.aws/credentials` file.
  <build>
  	<pluginManagement>
  		<plugins>
@@ -10,10 +19,32 @@
  				<extensions>true</extensions>
  				<configuration>
  					<source>background.jpg</source>
- 					<destination>background.jpg</destination>
  					<bucketName>castle-public</bucketName>
  				</configuration>
  			</plugin>
  		</plugins>
  	</pluginManagement>
  </build>
+
+To upload several files, use
+
+ <configuration>
+    <sources>
+ 	    <source>background.jpg</source>
+ 	    <source>tile.jpg</source>
+    </sources>
+ 	<bucketName>castle-public</bucketName>
+ </configuration>
+
+== Limitations
+
+Only one bucket can be configured per execution.
+No metadata support.
+No ACL support.
+When uploading  more than 1 file/folder, destination names of files will be the same as original names.
+
+== Configuration
+
+== Credentials options
+
+== Examples
