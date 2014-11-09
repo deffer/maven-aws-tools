@@ -37,13 +37,54 @@ To upload several files, use
  	<bucketName>castle-public</bucketName>
  </configuration>
 
-== Limitations
+== Description
 
-Only one bucket can be configured per execution.
+Can upload 1 file, list of files, content of 1 folder, content on several folders into one `destination` (folder).
+
+When uploading folder, only its content is uploaded (not the folder itself). With `recursive=true` it will include sub-folders (with their original names).
+For example, with this directory layout
+
+ my-app
+ |-- pom.xml
+ |-- assets.zip
+ `-- ASSETS
+     |-- castle.jpg
+     |-- welcome.jpg
+     `-- IMAGES
+         |-- a.png
+         `-- b.png
+
+and this configuration
+
+ <bucketName>castle-public</bucketName>
+ <destination>data</destination>
+ <sources>
+    <source>assets.zip</source>
+    <source>tile.jpg</source>
+ </sources>
+
+will result in next S3 structure
+
+ data/assets.zip
+ data/castle.jpg
+ data/welcome.jpg
+ data/IMAGES/a.png
+ data/IMAGES/b.png
+
+
+When uploading file or list of files, there is an option to add a `suffix` to each file name (ex. version)
+
+When uploading single file, `destination` is treated as new file name.
+
+Path to files/folders is relative to current working dir.
+
+=== Limitations
+
+Only one bucket and one destination folder can be configured per execution.
 
 No metadata support. No ACL support.
 
-When uploading  more than 1 file/folder, destination names of files will be the same as original names.
+Suffix only supported for files (single or list) but not in folders
 
 == Configuration
 
@@ -54,7 +95,7 @@ When uploading  more than 1 file/folder, destination names of files will be the 
 
 |bucketName
 |yes
-|name of the bucket in S3, ex. my-public-bucket
+|name of the bucket in S3, ex. `my-public-bucket`
 
 |credentialProvider
 |no
@@ -70,11 +111,11 @@ When uploading  more than 1 file/folder, destination names of files will be the 
 
 |destination
 |no
-|if only one source is defined, destination means new (S3) file name. otherwise its the name of "subfolder" in the S3 where files/folders will be copied to
+|if only one source is defined, destination means new (S3) file name. otherwise its treated as name of "subfolder" in the bucket where files/folders will be copied to
 
 |recursive
 |no
-|default "true". when uploading folder, indicates whether inner folders should be uploaded to
+|_default false_ when uploading folder, indicates whether inner folders should be uploaded to
 
 |suffix
 |no
@@ -82,7 +123,7 @@ When uploading  more than 1 file/folder, destination names of files will be the 
 
 |dryRun
 |no
-|default "false". Skips the actual upload. Use it to test your configuration before running it.
+|_default false_ Skips the actual upload. Use it to test your configuration before running it.
 
 |accessKey,
 secretKey
