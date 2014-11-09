@@ -164,3 +164,25 @@ configured in pom (not recommended)
  </configuration>
  
 == Examples
+
+Upload file `assets.zip` as `assets.dat` into castle-public bucket
+
+ <configuration>
+  <bucketName>castle-public</bucketName>
+  <source>assets.zip</source>
+  <destination>assets.dat</destination>
+ </configuration>
+
+Upload files `assets.zip` and `assets.meta` into castle-public adding project version to their names
+
+ <configuration>
+  <bucketName>castle-public</bucketName>
+    <sources>
+      <source>assets.zip</source>    
+ 	    <source>assets.meta</source>
+    </sources>  
+  <suffix>-${project.version}</suffix>
+ </configuration>
+
+
+ 
