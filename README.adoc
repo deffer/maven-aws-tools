@@ -58,6 +58,7 @@ and this configuration
 
  <bucketName>castle-public</bucketName>
  <destination>data</destination>
+ <recursive>true</recursive>
  <sources>
     <source>assets.zip</source>
     <source>ASSETS</source>
@@ -100,7 +101,7 @@ Suffix only supported for files (single or list) but not in folders
 |credentialProvider
 |no +
 _(default file)_
-|`env \| java \| file \| instance \| provided`. See below for description.
+|`env \| java \| file \| instance \| provided`. See description below.
 
 |source
 |yes* _(either source or sources)_
@@ -136,7 +137,9 @@ secretKey
 
 == Credentials options
 
-The `credentialProvider` configuration has next options (which corresponds to those described http://docs.aws.amazon.com/AWSSdkDocsJava/latest//DeveloperGuide/credentials.html[here])
+The `credentialProvider` configuration has next options(which corresponds to those described 
+http://docs.aws.amazon.com/AWSSdkDocsJava/latest//DeveloperGuide/credentials.html[here]
+and http://docs.aws.amazon.com/AWSSdkDocsJava/latest//DeveloperGuide/java-dg-setup.html#set-up-creds[here])
 
 env:: 
 through environment `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
@@ -144,6 +147,11 @@ java::
 through java system properties `aws.accessKeyId` and `aws.secretKey`
 file::  
 in the credentials file at `<USER_HOME>/.aws/credentials`
+
+ [default]
+ aws_access_key_id = your_access_key_id
+ aws_secret_access_key = your_secret_access_key
+ 
 instance::  
 through the Amazon EC2 metadata service (only when running on EC2 instances)
 provided::
