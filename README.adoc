@@ -47,6 +47,7 @@ When uploading  more than 1 file/folder, destination names of files will be the 
 
 == Configuration
 
+[cols="1,1,2"]
 .Parameters
 |===
 |Name |Required |Description
@@ -55,17 +56,38 @@ When uploading  more than 1 file/folder, destination names of files will be the 
 |yes
 |name of the bucket in S3, ex. my-public-bucket
 
+|credentialProvider
+|no
+|`env, java, file (default), instance or provided`. See below for description.
+
 |source
-|yes* (either sources or sources)
+|yes* (either source or sources)
 |name of the single file to upload
 
 |sources
-|yes* (either sources or sources)
+|yes* (either source or sources)
 |list of files/folders to upload
 
-|etc
-|etc
-|etc
+|destination
+|no
+|if only one source is defined, destination means new (S3) file name. otherwise its the name of "subfolder" in the S3 where files/folders will be copied to
+
+|recursive
+|no
+|default "true". when uploading folder, indicates whether inner folders should be uploaded to
+
+|suffix
+|no
+|when uploading files (no folders), suffix is added to the end of destination filename. can be used as version.
+
+|dryRun
+|no
+|default "false". Skips the actual upload. Use it to test your configuration before running it.
+
+|accessKey,
+secretKey
+|no
+|required when credentialProvider is `provided`
 |===
 
 == Credentials options
