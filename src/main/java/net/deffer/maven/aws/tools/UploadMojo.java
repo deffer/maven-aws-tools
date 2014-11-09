@@ -1,4 +1,4 @@
-package org.deffer.maven.aws.tools;
+package net.deffer.maven.aws.tools;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class UploadMojo extends AbstractMojo {
 
     /**
      * env, java, file (default), instance, provided
-     * @see org.deffer.maven.aws.tools.UploadMojo.CRED_TYPES
+     * @see net.deffer.maven.aws.tools.UploadMojo.CRED_TYPES
      */
 	@Parameter(property = "run.credentialProvider", defaultValue = "file")
 	private String credProviderParam;
@@ -175,16 +175,16 @@ public class UploadMojo extends AbstractMojo {
                 if (isFile)
                     upload = tm.upload(bucketName, key, sourceFile);   // <----------- UPLOAD --
                 else
-                    upload = tm.uploadDirectory(bucketName,destination, sourceFile, true);
+                    upload = tm.uploadDirectory(bucketName, destination, sourceFile, true);
 
                 try {
                     getLog().debug("Transferring " + upload.getProgress().getTotalBytesToTransfer() + " bytes...");
 
                     upload.waitForCompletion();  // <----------- and wait --
                     if (isFile)
-                        getLog().info("Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes. "+sourceFile+" to "+ bucketName + " as "+key);
+                        getLog().info("Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes. "+sourceFileName+" to "+ bucketName + " as "+key);
                     else
-                        getLog().info("Upload complete: folder " + sourceFile+" to "+ bucketName + (key.equals(sourceFileName)?"":" as "+key));
+                        getLog().info("Upload complete: folder " + sourceFileName+" to "+ bucketName + (destination.isEmpty()?"":" as "+destination));
                 } catch (AmazonClientException ae) {
                     getLog().error("Unable to upload file, upload was aborted. " + ae.getMessage(), ae);
                     ae.printStackTrace();
@@ -196,7 +196,10 @@ public class UploadMojo extends AbstractMojo {
                     throw new MojoExecutionException("Unable to upload file to S3: unexpected interruption");
                 }
             }else{
-                getLog().info("(dry run) "+(isFile?"File ":"Folder ")+sourceFile+" would have been uploaded to "+bucketName+" as "+key);
+	            if (isFile)
+                    getLog().info("(dry run) File "+sourceFileName+" would have been uploaded to "+bucketName+" as "+key);
+	            else
+                    getLog().info("(dry run) Folder "+sourceFileName+" would have been uploaded to "+bucketName+ (destination.isEmpty()?"":" as "+destination));
             }
         }
 	}
