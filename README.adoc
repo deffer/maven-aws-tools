@@ -9,6 +9,7 @@ At the moment only supports upload of resources to S3 bucket.
 * Run `mvn aws-tools:upload`
 
 For example, the minimal configuration below will upload file `background.jpg` into `castle-public` bucket. Credentials will bee looked in the `USER_HOME/.aws/credentials` file.
+
  <build>
  	<pluginManagement>
  		<plugins>
@@ -39,11 +40,33 @@ To upload several files, use
 == Limitations
 
 Only one bucket can be configured per execution.
-No metadata support.
-No ACL support.
+
+No metadata support. No ACL support.
+
 When uploading  more than 1 file/folder, destination names of files will be the same as original names.
 
 == Configuration
+
+.Parameters
+|===
+|Name |Required |Description
+
+|bucketName
+|yes
+|name of the bucket in S3, ex. my-public-bucket
+
+|source
+|yes* (either sources or sources)
+|name of the single file to upload
+
+|sources
+|yes* (either sources or sources)
+|list of files/folders to upload
+
+|etc
+|etc
+|etc
+|===
 
 == Credentials options
 
