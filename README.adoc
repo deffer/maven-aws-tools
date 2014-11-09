@@ -42,7 +42,7 @@ To upload several files, use
 Can upload 1 file, list of files, content of 1 folder, content on several folders into one `destination` (folder).
 
 When uploading folder, only its content is uploaded (not the folder itself). With `recursive=true` it will include sub-folders (with their original names).
-For example, with this directory layout
+For example, this directory layout
 
  my-app
  |-- pom.xml
@@ -60,7 +60,7 @@ and this configuration
  <destination>data</destination>
  <sources>
     <source>assets.zip</source>
-    <source>tile.jpg</source>
+    <source>ASSETS</source>
  </sources>
 
 will result in next S3 structure
@@ -98,7 +98,8 @@ Suffix only supported for files (single or list) but not in folders
 |name of the bucket in S3, ex. `my-public-bucket`
 
 |credentialProvider
-|no
+|no +
+(_default file_)
 |`env, java, file (default), instance or provided`. See below for description.
 
 |source
@@ -114,21 +115,23 @@ Suffix only supported for files (single or list) but not in folders
 |if only one source is defined, destination means new (S3) file name. otherwise its treated as name of "subfolder" in the bucket where files/folders will be copied to
 
 |recursive
-|no
-|_default false_ when uploading folder, indicates whether inner folders should be uploaded to
+|no +
+(_default false_)
+|when uploading folder, indicates whether inner folders should be uploaded too
 
 |suffix
 |no
 |when uploading files (no folders), suffix is added to the end of destination filename. can be used as version.
 
 |dryRun
-|no
-|_default false_ Skips the actual upload. Use it to test your configuration before running it.
+|no +
+(_default false_)
+|Skips the actual upload. Use it to test your configuration before running it.
 
 |accessKey,
 secretKey
 |no
-|required when credentialProvider is `provided`
+|only required when credentialProvider is `provided`
 |===
 
 == Credentials options
