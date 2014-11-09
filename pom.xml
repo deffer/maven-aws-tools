@@ -8,6 +8,8 @@
 	<packaging>maven-plugin</packaging>
 
 	<name>AWS tools maven plugin (S3 upload)</name>
+	<description>Maven Parent for uploading resources to Amazon S3 bucket</description>
+	<url>https://github.com/deffer/maven-aws-tools</url>
 
 	<scm>
 		<url>https://github.com/deffer/aws-tools-maven-plugin</url>
@@ -179,6 +181,13 @@
 		</pluginManagement>
 	</build>
 
+	<developers>
+		<developer>
+			<email>irina.benediktovich@gmail.com</email>
+			<id>deffer</id>
+			<name>Irina Benediktovich</name>
+		</developer>
+	</developers>
 
 	<licenses>
 		<license>
