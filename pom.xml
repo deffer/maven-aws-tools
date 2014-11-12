@@ -3,7 +3,7 @@
 
 	<groupId>net.deffer.maven</groupId>
 	<artifactId>aws-tools-maven-plugin</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.2</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>AWS tools maven plugin (S3 upload)</name>
@@ -14,7 +14,7 @@
 		<url>https://github.com/deffer/aws-tools-maven-plugin</url>
 		<connection>scm:git:git@github.com:deffer/aws-tools-maven-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:deffer/aws-tools-maven-plugin.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>aws-tools-maven-plugin-1.2</tag>
 	</scm>
 
 	<properties>
