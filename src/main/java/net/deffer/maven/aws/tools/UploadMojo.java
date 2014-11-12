@@ -156,29 +156,33 @@ public class UploadMojo extends AbstractMojo {
 
             boolean isFile = sourceFile.isFile();
 
-            String key = sourceFileName;
-            if (!destination.isEmpty() && source!= null && fileNames.size()==1 && isFile)
+            String key = sourceFile.getName();
+            if (!destination.isEmpty() && source!= null && fileNames.size()==1 && isFile) {
                 key = destination;
-            else {
+                if (suffix != null && !suffix.isEmpty())
+                    getLog().warn("Suffix will be ignored due to full destination name being provided");
+            } else {
                 if (!destination.isEmpty() && !destination.endsWith("/"))
                     destination+= "/";
 
                 if (isFile){
-                    key = destination + key + suffix;
+                    key = destination + addSuffix(key, suffix);
                 }else if (!destination.isEmpty()){
                     key = destination;
                 }
             }
 
             if (!dryRun) {
-                Transfer upload;
-                if (isFile)
-                    upload = tm.upload(bucketName, key, sourceFile);   // <----------- UPLOAD --
-                else
-                    upload = tm.uploadDirectory(bucketName, destination, sourceFile, true);
 
                 try {
-                    getLog().debug("Transferring " + upload.getProgress().getTotalBytesToTransfer() + " bytes...");
+                    Transfer upload;
+                    if (isFile) {                                          // <----------- UPLOAD --
+                        upload = tm.upload(bucketName, key, sourceFile);
+                        getLog().info("Transferring " + sourceFileName+" - "+upload.getProgress().getTotalBytesToTransfer() + " bytes...");
+                    }else {
+                        upload = tm.uploadDirectory(bucketName, destination, sourceFile, true);
+                        getLog().info("Transferring content of " + sourceFileName+" - "+upload.getProgress().getTotalBytesToTransfer() + " bytes...");
+                    }
 
                     upload.waitForCompletion();  // <----------- and wait --
                     if (isFile)
@@ -223,5 +227,14 @@ public class UploadMojo extends AbstractMojo {
 			default: throw new MojoExecutionException("Unknown credentials provider "+credProviderType);
 		}
 	}
+
+    private String addSuffix(String fileName, String suffix){
+        if (suffix == null) return fileName;
+
+        int index = fileName.lastIndexOf(".");
+        if (index < 0)
+            return fileName+suffix;
+        return fileName.substring(0, index) + suffix + fileName.substring(index);
+    }
 
 }
