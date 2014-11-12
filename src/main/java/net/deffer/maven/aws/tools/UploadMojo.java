@@ -177,18 +177,17 @@ public class UploadMojo extends AbstractMojo {
                 try {
                     Transfer upload;
                     if (isFile) {                                          // <----------- UPLOAD --
-                        upload = tm.upload(bucketName, key, sourceFile);
-                        getLog().info("Transferring " + sourceFileName+" - "+upload.getProgress().getTotalBytesToTransfer() + " bytes...");
+	                    getLog().info("Uploading " + sourceFile.getName()+" to "+ bucketName + " as "+key);
+	                    upload = tm.upload(bucketName, key, sourceFile);
                     }else {
+	                    getLog().info("Uploading " + sourceFile.getName()+" to "+ bucketName + (destination.isEmpty()?"":" as "+destination));
                         upload = tm.uploadDirectory(bucketName, destination, sourceFile, true);
-                        getLog().info("Transferring content of " + sourceFileName+" - "+upload.getProgress().getTotalBytesToTransfer() + " bytes...");
                     }
 
+	                getLog().info("    Transferring " + upload.getProgress().getTotalBytesToTransfer() + " bytes...");
                     upload.waitForCompletion();  // <----------- and wait --
-                    if (isFile)
-                        getLog().info("Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes. "+sourceFileName+" to "+ bucketName + " as "+key);
-                    else
-                        getLog().info("Upload complete: folder " + sourceFileName+" to "+ bucketName + (destination.isEmpty()?"":" as "+destination));
+                    getLog().info("    Upload complete. " + upload.getProgress().getBytesTransferred() + " bytes transferred.");
+
                 } catch (AmazonClientException ae) {
                     getLog().error("Unable to upload file, upload was aborted. " + ae.getMessage(), ae);
                     ae.printStackTrace();

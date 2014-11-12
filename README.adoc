@@ -75,7 +75,7 @@ will result in next S3 structure
 
 When uploading file or list of files, there is an option to add a `suffix` to each file name (ex. version)
 
-When uploading single file, `destination` is treated as new file name.
+When uploading single file using `source` (not list of sources), `destination` is treated as new file name.
 
 Path to files/folders is relative to current working dir.
 
@@ -89,7 +89,7 @@ Suffix only supported for files (single or list) but not in folders
 
 === Known bugs
 
-Suffix is added to the end of full file name (so to the extension)
+Sometimes it reports `0 bytes transferred` although upload completed successfully.
 
 == Configuration
 
@@ -177,16 +177,26 @@ Upload file `assets.zip` as `assets.dat` into castle-public bucket
   <destination>assets.dat</destination>
  </configuration>
 
+Upload assets.zip from target folder into subfolder `resources` adding version as suffix
+
+ <configuration>
+    <bucketName>castle-public</bucketName>
+    <sources>
+        <source>${project.build.directory}/assets.zip</source>
+    </sources>
+    <suffix>-${project.version}</suffix>
+    <destination>resources</destination>
+ </configuration>
+
 Upload files `assets.zip` and `assets.meta` into castle-public adding project version to their names
 
  <configuration>
-  <bucketName>castle-public</bucketName>
+    <bucketName>castle-public</bucketName>
     <sources>
-      <source>assets.zip</source>    
- 	    <source>assets.meta</source>
-    </sources>  
-  <suffix>-${project.version}</suffix>
+        <source>assets.zip</source>
+        <source>assets.meta</source>
+    </sources>
+    <suffix>-${project.version}</suffix>
  </configuration>
-
 
  
