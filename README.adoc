@@ -1,4 +1,4 @@
-= AWS tools maven plugin
+= AWS tools maven plugin (S3 upload)
 
 At the moment only supports upload of resources to S3 bucket.
 
