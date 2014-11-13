@@ -16,7 +16,7 @@ For example, the minimal configuration below will upload file `background.jpg` i
  			<plugin>
  				<groupId>net.deffer.maven</groupId>
  				<artifactId>aws-tools-maven-plugin</artifactId>
- 				<version>1.1</version>
+ 				<version>1.2</version>
  				<extensions>true</extensions>
  				<configuration>
  					<source>background.jpg</source>
@@ -141,7 +141,7 @@ secretKey
 
 == Credentials options
 
-The `credentialProvider` configuration has next options(which corresponds to those described 
+The `credentialProvider` configuration has following options (which corresponds to those described 
 http://docs.aws.amazon.com/AWSSdkDocsJava/latest//DeveloperGuide/credentials.html[here]
 and http://docs.aws.amazon.com/AWSSdkDocsJava/latest//DeveloperGuide/java-dg-setup.html#set-up-creds[here])
 
@@ -153,8 +153,8 @@ file::
 in the credentials file at `<USER_HOME>/.aws/credentials`
 
  [default]
- aws_access_key_id = your_access_key_id
- aws_secret_access_key = your_secret_access_key
+ aws_access_key_id = AKAIAJT6FPYEQJN4J1EK
+ aws_secret_access_key = dyunreKhlo7M655hNGoiHm7f63r1ccm0fJbhJg1z
  
 instance::  
 through the Amazon EC2 metadata service (only when running on EC2 instances)
@@ -163,8 +163,8 @@ configured in pom (not recommended)
 
  <configuration>
  	<credentialProvider>provided</credentialProvider>
- 	<accessKey>...</accessKey> 	
- 	<secretKey>...</secretKey>
+ 	<accessKey>AKAIAJT6FPYEQJN4J1EK</accessKey> 	
+ 	<secretKey>dyunreKhlo7M655hNGoiHm7f63r1ccm0fJbhJg1z</secretKey>
  </configuration>
  
 == Examples
@@ -177,7 +177,7 @@ Upload file `assets.zip` as `assets.dat` into castle-public bucket
   <destination>assets.dat</destination>
  </configuration>
 
-Upload assets.zip from target folder into subfolder `resources` adding version as suffix
+Upload `assets.zip` from `target` folder into subfolder `resources` adding project version as name suffix
 
  <configuration>
     <bucketName>castle-public</bucketName>
@@ -188,7 +188,7 @@ Upload assets.zip from target folder into subfolder `resources` adding version a
     <destination>resources</destination>
  </configuration>
 
-Upload files `assets.zip` and `assets.meta` into castle-public adding project version to their names
+Upload files `assets.zip` and `assets.meta` into castle-public adding version to their names
 
  <configuration>
     <bucketName>castle-public</bucketName>
@@ -200,3 +200,10 @@ Upload files `assets.zip` and `assets.meta` into castle-public adding project ve
  </configuration>
 
  
+== Helpful links
+
+http://blogs.aws.amazon.com/security/post/Tx1R9KDN9ISZ0HF/Where-s-my-secret-access-key[How to create AWS user with credentials]
+
+How to create a bucket with public read access [TODO]
+
+How to give user a write access to a bucket [TODO]
